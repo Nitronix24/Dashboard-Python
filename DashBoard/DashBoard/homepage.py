@@ -9,29 +9,39 @@ def homepage(request):
           body {
             margin: 0;
             padding: 0;
-            background-color: blue;
+            background: linear-gradient(blue, white);
             font-family: Arial, sans-serif;
           }
-          .header {
-            background-color: #fff;
+          .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #808080;
+            height: 40px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            color: #fff;
           }
-          .search-bar {
-            padding: 5px;
+          .start-button {
+            background-color: #444;
+            color: #fff;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 5px 10px;
+            margin: 5px;
+            cursor: pointer;
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+          }
+          .start-button:hover {
+            background-color: #555;
           }
         </style>
       </head>
       <body>
-        <div class="header">
-          <h1>Welcome to the Dashboard</h1>
-          <form>
-            <input class="search-bar" type="search" placeholder="Search..." />
-          </form>
+        <div class="taskbar">
+          <button class="start-button">Start</button>
         </div>
-        <p>Here is a simple placeholder for stats or charts.</p>
       </body>
     </html>
     """)
