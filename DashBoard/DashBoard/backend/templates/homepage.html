@@ -53,6 +53,16 @@
             <img src="{{ terminal.icon }}" alt="{{ terminal.name }} icon">
         </div>
         <h1>Bienvenue sur la Homepage</h1>
+        <div class="icons-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px;">
+            {% for icon in icons %}
+                <div class="icon-item" style="text-align: center;">
+                    <img src="{{ icon.icon_image.url }}" alt="{{ icon.icon_name }}" style="max-width: 100px; max-height: 100px;">
+                    <p>{{ icon.icon_name }}</p>
+                </div>
+            {% empty %}
+                <p>Aucune icône trouvée.</p>
+            {% endfor %}
+        </div>
     </div>
     <div class="taskbar">
         <!-- Bouton pour changer de page présent dans la barre de tâche -->
