@@ -21,8 +21,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',  # API REST
-    'core',
+    'core',  # Si tu n'as pas configuré `apps.py`
+    # ou
+    'core.apps.CoreConfig',  # Si tu as configuré `apps.py`
     'desktop',
 ]
 
