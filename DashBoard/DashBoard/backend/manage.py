@@ -4,7 +4,7 @@ import sys
 
 def main():
     """Point d'entrée principal pour les commandes Django."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dashboard.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.dashboard.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

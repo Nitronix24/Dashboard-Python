@@ -21,10 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',  # Si tu n'as pas configuré `apps.py`
-    # ou
-    'core.apps.CoreConfig',  # Si tu as configuré `apps.py`
-    'desktop',
+    # 'core',  # Ensure this line is commented out or removed
+    'backend.APP.desktop',  # Adjust the path to the correct location
 ]
 
 # Middleware
@@ -45,7 +43,7 @@ ROOT_URLCONF = 'dashboard.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates'],  # Utilisez ici BASE_DIR pour désigner le dossier 'templates'
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
