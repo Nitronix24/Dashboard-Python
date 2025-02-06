@@ -1,6 +1,9 @@
 import os
 import sys
 
+# Ajoutez le dossier parent au PYTHONPATH, pour inclure "frontend"
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dashboard.settings')
     try:
