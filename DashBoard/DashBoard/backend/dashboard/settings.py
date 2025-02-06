@@ -21,8 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'core',  # Ensure this line is commented out or removed
-    'backend.APP.desktop',  # Adjust the path to the correct location
+    'APP.core',
+    'APP.dekstop',  # updated to match the actual folder name
 ]
 
 # Middleware

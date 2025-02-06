@@ -3,6 +3,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/core/', include('core.urls')),       # URLs pour l'application core
-    path('api/desktop/', include('desktop.urls')), # URLs pour l'application desktop
+    path('api/core/', include('APP.core.urls')),       # updated include
+    path('api/desktop/', include('APP.dekstop.urls')),   # updated include to match folder name
 ]

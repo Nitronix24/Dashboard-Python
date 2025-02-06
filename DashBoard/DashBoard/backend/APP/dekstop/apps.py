@@ -1,4 +1,5 @@
 from django.apps import AppConfig
 
 class DesktopConfig(AppConfig):
-    name = 'backend.APP.desktop'
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'APP.dekstop'
