@@ -1,6 +1,6 @@
 from django.shortcuts import render
- 
+from backend.APP.core.models import Icon
 
 def homepage(request):
-    return render(request, 'homepage.html')
-
+    icons = Icon.objects.all()
+    return render(request, 'homepage.html', {'icons': icons})
