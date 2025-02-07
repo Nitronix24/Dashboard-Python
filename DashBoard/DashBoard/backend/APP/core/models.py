@@ -19,12 +19,18 @@ class CustomUser(AbstractUser):
         verbose_name='user permissions'
     )
 
+    class Meta:
+        app_label = "APP"
+
     def __str__(self):
         return self.username
     
 class Icon(models.Model):
     icon_name = models.CharField(max_length=100)
     icon_image = models.ImageField(upload_to='frontend/Ressources/Icon/')
+
+    class Meta:
+        app_label = "APP"
 
     def __str__(self):
         return self.icon_name
