@@ -9,10 +9,18 @@
             background: #2c3e50;
             color: white;
             font-family: Arial, sans-serif;
+            background: url('/static/images/fond.jpg');
         }
         .toolbar {
-            margin: 20px;
             background-color: blanchedalmond;
+        }
+        .toolbar button {
+            background-color: #1a1a2e;
+            color: white;
+            margin: 5px;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
         }
         .desktop {
             position: relative;
@@ -39,16 +47,16 @@
 </head>
 <body>
     <div class="toolbar">
-        <button onclick="createTool('Terminal', 'https://via.placeholder.com/50', '#3498db')">Terminal</button>
-        <button onclick="createTool('Minecraft', 'https://via.placeholder.com/50', '#e74c3c')">Minecraft</button>
-        <button onclick="createTool('Mes Fichier', 'https://via.placeholder.com/50', '#2ecc71')">Mes Fichier</button>
+        <button onclick="createTool('Terminal', 'https://via.placeholder.com/50', '#3498db', '/apps/home', 200, 350)">Terminal</button>
+        <button onclick="createTool('Minecraft', 'https://via.placeholder.com/50', '#e74c3c', '/apps/home', 200, 350)">Minecraft</button>
+        <button onclick="createTool('Mes Fichier', 'https://via.placeholder.com/50', '#2ecc71', '/apps/home', 200, 350)">Mes Fichier</button>
     </div>
 
     {% if tools %}
     <div class="desktop" id="desktop">
         {% for tool in tools %}
-        <div class="tool-box" id="tool-{{ tool.id }}" style="background-color: {{ tool.color }}; top: {{ tool.position_y }}px; left: {{ tool.position_x }}px;">
-            <img src="{{ tool.icon_url }}" alt="{{ tool.name }}">
+        <div class="tool-box" id="tool-{{ tool.id }}" style="background-color: {{ tool.color }}; height: {{ tool.height }}px; width: {{ tool.width }}px; ">
+            <iframe src="{{ tool.url }}" width="100%" height="100%"></iframe> 
         </div>
         {% endfor %}
     </div>
@@ -81,14 +89,17 @@
 
         document.querySelectorAll(".tool-box").forEach(makeDraggable);
 
-        function createTool(name, icon_url, color) {
+        function createTool(name, icon_url, color, url, height, width) {
             fetch("{% url 'create_tool' %}", {
                 method: "POST",
                 headers: { "X-CSRFToken": "{{ csrf_token }}" },
                 body: new URLSearchParams({
                     name: name,
                     icon_url: icon_url,
-                    color: color
+                    color: color,
+                    url: url,
+                    height: height,
+                    width: width
                 })
             })
             .then(response => response.json())
@@ -102,7 +113,11 @@
                 toolBox.style.backgroundColor = data.color;
                 toolBox.style.top = "100px";
                 toolBox.style.left = "100px";
-                toolBox.innerHTML = `<img src="${data.icon_url}" alt="${data.name}">`;
+                toolBox.style.height = data.height + "px";
+                toolBox.style.width = data.width + "px";
+                toolBox.innerHTML = `
+                    <iframe src="${data.url}" width="100%" height="100%"></iframe>
+                `;
 
                 document.getElementById("desktop").appendChild(toolBox);
                 makeDraggable(toolBox);

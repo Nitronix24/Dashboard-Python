@@ -6,6 +6,7 @@
 > conda activate myenv
 
 > pip install django
+> pip install django-cors-headers
 
 if not working
 
