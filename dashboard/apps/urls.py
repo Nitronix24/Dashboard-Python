@@ -3,7 +3,10 @@ from . import views
 from .views import home, desktop
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', views.terminal, name='terminal'),  # This maps the root URL to the terminal view
     path('desktop/', views.desktop, name='desktop'),
-    path('desktop/create_tool/', views.create_tool, name='create_tool') 
+    path('terminal/', views.terminal, name='terminal'),
+    path('snake/', views.snake, name='snake'),
+    path('agenda/', views.agenda, name='agenda'),  # Added path for agenda
+    path('desktop/create_tool/', views.create_tool, name='create_tool')
 ]

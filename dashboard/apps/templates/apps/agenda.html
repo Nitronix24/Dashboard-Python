@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Interactif</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        #sidebar {
+            width: 250px;
+            border-right: 1px solid #ccc;
+            padding: 10px;
+        }
+        #calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: auto;
+            gap: 1px;
+            padding: 10px;
+            flex-grow: 1;
+        }
+        .day {
+            border: 1px solid #ddd;
+            min-height: 100px;
+            padding: 5px;
+            background-color: #f9f9f9;
+            text-align: center;
+            position: relative;
+        }
+        .day span {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-weight: bold;
+        }
+        #header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+        }
+        .event {
+            background-color: #ff7675;
+            color: white;
+            padding: 3px;
+            margin-top: 5px;
+            border-radius: 4px;
+        }
+        #week-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <h2 id="monthYear">Février 2025</h2>
+        <input type="date" id="eventDate">
+        <input type="text" id="eventText" placeholder="Ajouter un événement">
+        <button onclick="addEvent()">Ajouter</button>
+    </div>
+    <div id="main">
+        <div id="week-controls">
+            <button onclick="changeWeek(-1)">&#9664; </button>
+            <h3 id="week-range"></h3>
+            <button onclick="changeWeek(1)"> &#9654;</button>
+        </div>
+        <div id="header">
+            <div>Dim.</div><div>Lun.</div><div>Mar.</div><div>Mer.</div><div>Jeu.</div><div>Ven.</div><div>Sam.</div>
+        </div>
+        <div id="calendar"></div>
+    </div>
+
+    <script>
+        let currentDate = new Date(2025, 1, 9);
+
+        function renderWeek() {
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+            const startOfWeek = new Date(currentDate);
+            startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+
+            let weekRangeText = startOfWeek.toLocaleDateString() + ' - ';
+            
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(startOfWeek);
+                day.setDate(startOfWeek.getDate() + i);
+                let dayDiv = document.createElement('div');
+                dayDiv.classList.add('day');
+                dayDiv.id = `day-${day.getDate()}`;
+                dayDiv.innerHTML = `<span>${day.getDate()}</span>`;
+                calendar.appendChild(dayDiv);
+
+                if (i === 6) weekRangeText += day.toLocaleDateString();
+            }
+
+            document.getElementById('week-range').textContent = weekRangeText;
+        }
+
+        function changeWeek(direction) {
+            currentDate.setDate(currentDate.getDate() + direction * 7);
+            renderWeek();
+        }
+
+        function addEvent() {
+            const date = new Date(document.getElementById('eventDate').value);
+            const text = document.getElementById('eventText').value;
+            if (!date || !text) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+            const dayId = `day-${date.getDate()}`;
+            const dayDiv = document.getElementById(dayId);
+            if (dayDiv) {
+                const eventDiv = document.createElement('div');
+                eventDiv.classList.add('event');
+                eventDiv.textContent = text;
+                dayDiv.appendChild(eventDiv);
+            }
+        }
+
+        renderWeek();
+    </script>
+</body>
+</html>
