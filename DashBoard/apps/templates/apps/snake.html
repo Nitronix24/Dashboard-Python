@@ -17,7 +17,7 @@
             background-color: black;
             display: none;
         }
-        #startMenu {
+        #startMenu, #gameOverMenu {
             text-align: center;
             color: yellow;
             background-color: black;
@@ -34,10 +34,22 @@
             border: 2px solid yellow;
             animation: blink 1s infinite;
         }
+        #restartButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            color: yellow;
+            background: black;
+            border: 2px solid yellow;
+        }
         @keyframes blink {
             0% { opacity: 1; }
             50% { opacity: 0; }
             100% { opacity: 1; }
+        }
+        #gameOverMenu {
+            display: none;
         }
     </style>
 </head>
@@ -46,25 +58,42 @@
         <h1>Snake Game</h1>
         <button id="startButton" onclick="startGame()">Start</button>
     </div>
+    <div id="gameOverMenu">
+        <h1>Game Over</h1>
+        <button id="restartButton" onclick="restartGame()">Restart</button>
+    </div>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const startMenu = document.getElementById("startMenu");
+        const gameOverMenu = document.getElementById("gameOverMenu");
         
         const box = 20;
-        let snake = [{ x: 10 * box, y: 10 * box }];
-        let direction = "RIGHT";
-        let food = {
-            x: Math.floor(Math.random() * 20) * box,
-            y: Math.floor(Math.random() * 20) * box
-        };
-        let gameInterval;
+        let snake, direction, food, gameInterval;
+
+        function initializeGame() {
+            snake = [{ x: 10 * box, y: 10 * box }];
+            direction = "RIGHT";
+            food = {
+                x: Math.floor(Math.random() * 20) * box,
+                y: Math.floor(Math.random() * 20) * box
+            };
+        }
 
         function startGame() {
+            initializeGame();
             startMenu.style.display = "none";
+            gameOverMenu.style.display = "none";
             canvas.style.display = "block";
             document.addEventListener("keydown", changeDirection);
+            gameInterval = setInterval(drawGame, 100);
+        }
+
+        function restartGame() {
+            initializeGame();
+            gameOverMenu.style.display = "none";
+            canvas.style.display = "block";
             gameInterval = setInterval(drawGame, 100);
         }
 
@@ -103,8 +132,14 @@
             
             if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height ||
                 snake.some(segment => segment.x === head.x && segment.y === head.y)) {
-                alert("Game Over");
-                document.location.reload();
+                clearInterval(gameInterval);
+                canvas.style.display = "none";
+                gameOverMenu.style.display = "block";
+                setTimeout(() => {
+                    gameOverMenu.style.display = "none";
+                    startMenu.style.display = "block";
+                }, 2000);
+                return;
             }
             
             snake.unshift(head);
