@@ -39,7 +39,9 @@
 </head>
 <body>
     <div class="toolbar">
-        <button onclick="createTool()">Ajouter un outil</button>
+        <button onclick="createTool('Terminal', 'https://via.placeholder.com/50', '#3498db')">Terminal</button>
+        <button onclick="createTool('Minecraft', 'https://via.placeholder.com/50', '#e74c3c')">Minecraft</button>
+        <button onclick="createTool('Mes Fichier', 'https://via.placeholder.com/50', '#2ecc71')">Mes Fichier</button>
     </div>
 
     {% if tools %}
@@ -79,14 +81,14 @@
 
         document.querySelectorAll(".tool-box").forEach(makeDraggable);
 
-        function createTool() {
+        function createTool(name, icon_url, color) {
             fetch("{% url 'create_tool' %}", {
                 method: "POST",
                 headers: { "X-CSRFToken": "{{ csrf_token }}" },
                 body: new URLSearchParams({
-                    name: "Nouvel Outil",
-                    icon_url: "https://via.placeholder.com/50",
-                    color: "#3498db"
+                    name: name,
+                    icon_url: icon_url,
+                    color: color
                 })
             })
             .then(response => response.json())
