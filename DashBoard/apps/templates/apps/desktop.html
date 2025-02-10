@@ -43,6 +43,25 @@
             width: 50px;
             height: 50px;
         }
+        .context-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            z-index: 1000;
+        }
+        .context-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .context-menu ul li {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        .context-menu ul li:hover {
+            background-color: #eee;
+        }
     </style>
 </head>
 <body>
@@ -55,12 +74,18 @@
     {% if tools %}
     <div class="desktop" id="desktop">
         {% for tool in tools %}
-        <div class="tool-box" id="tool-{{ tool.id }}" style="background-color: {{ tool.color }}; height: {{ tool.height }}px; width: {{ tool.width }}px; ">
+        <div class="tool-box" id="tool-{{ tool.id }}" style="background-color: {{ tool.color }}; height: {{ tool.height }}px; width: {{ tool.width }}px;">
             <iframe src="{{ tool.url }}" width="100%" height="100%"></iframe> 
         </div>
         {% endfor %}
     </div>
     {% endif %}
+
+    <div class="context-menu" id="context-menu">
+        <ul>
+            <li onclick="closeToolBox()" style="color: black;">Fermer</li>
+        </ul>
+    </div>
 
     <script>
         function makeDraggable(element) {
@@ -121,8 +146,45 @@
 
                 document.getElementById("desktop").appendChild(toolBox);
                 makeDraggable(toolBox);
+                addContextMenu(toolBox);
             });
         }
+
+        function addContextMenu(element) {
+            element.addEventListener("contextmenu", function(e) {
+                e.preventDefault();
+                const contextMenu = document.getElementById("context-menu");
+                contextMenu.style.display = "block";
+                contextMenu.style.left = e.pageX + "px";
+                contextMenu.style.top = e.pageY + "px";
+                contextMenu.dataset.target = element.id;
+            });
+        }
+
+        document.addEventListener("click", function() {
+            document.getElementById("context-menu").style.display = "none";
+        });
+
+        function closeToolBox() {
+            const contextMenu = document.getElementById("context-menu");
+            const targetId = contextMenu.dataset.target;
+            const targetElement = document.getElementById(targetId);
+
+            fetch(`/delete_tool/${targetId.split('-')[1]}/`, {
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    targetElement.remove();
+                } else {
+                    alert("Erreur lors de la suppression de l'outil.");
+                }
+            });
+        }
+
+        document.querySelectorAll(".tool-box").forEach(addContextMenu);
     </script>
 </body>
 </html>
