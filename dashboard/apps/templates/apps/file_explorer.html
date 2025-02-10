@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Explorer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .file-explorer {
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .folder, .file {
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .folder {
+            font-weight: bold;
+            background-color: #e1f5fe;
+            border: 1px solid #b3e5fc;
+            margin-bottom: 5px;
+        }
+        .file {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+        }
+        .folder-content {
+            margin-left: 20px;
+            display: none;
+        }
+        .icon {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>File Explorer</h1>
+        <div class="file-explorer" id="file-explorer">
+            <!-- File structure will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const fileStructure = [
+            {
+                name: 'Documents',
+                type: 'folder',
+                content: [
+                    { name: 'Resume.pdf', type: 'file' },
+                    { name: 'CoverLetter.docx', type: 'file' },
+                    {
+                        name: 'Projects',
+                        type: 'folder',
+                        content: [
+                            { name: 'Project1', type: 'folder', content: [] },
+                            { name: 'Project2', type: 'folder', content: [] }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: 'Pictures',
+                type: 'folder',
+                content: [
+                    { name: 'Vacation.jpg', type: 'file' },
+                    { name: 'Family.png', type: 'file' }
+                ]
+            },
+            { name: 'Music', type: 'folder', content: [] },
+            { name: 'ToDo.txt', type: 'file' }
+        ];
+
+        function createFileExplorer(container, structure) {
+            structure.forEach(item => {
+                const element = document.createElement('div');
+                element.className = item.type;
+                element.innerHTML = `<span class="icon">${item.type === 'folder' ? '📁' : '📄'}</span>${item.name}`;
+
+                if (item.type === 'folder') {
+                    element.addEventListener('click', () => {
+                        const content = element.nextElementSibling;
+                        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+                    });
+
+                    const content = document.createElement('div');
+                    content.className = 'folder-content';
+                    createFileExplorer(content, item.content);
+                    container.appendChild(element);
+                    container.appendChild(content);
+                } else {
+                    container.appendChild(element);
+                }
+            });
+        }
+
+        const fileExplorer = document.getElementById('file-explorer');
+        createFileExplorer(fileExplorer, fileStructure);
+    </script>
+</body>
+</html>
