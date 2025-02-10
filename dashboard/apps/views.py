@@ -30,3 +30,10 @@ def create_tool(request):
         })
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def crypto(request):
+    return render(request, 'apps/crypto.html')
+
+def explorer(request):
+    return render(request, 'apps/file_explorer.html')
