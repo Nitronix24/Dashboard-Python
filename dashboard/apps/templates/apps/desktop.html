@@ -60,15 +60,17 @@
             cursor: pointer;
         }
         .context-menu ul li:hover {
-            background-color: #eee;
+            background-color: #ededed;
         }
     </style>
 </head>
 <body>
     <div class="toolbar">
-        <button onclick="createTool('Terminal', 'https://via.placeholder.com/50', '#3498db', '/apps/home', 200, 350)">Terminal</button>
-        <button onclick="createTool('Minecraft', 'https://via.placeholder.com/50', '#e74c3c', '/apps/home', 200, 350)">Minecraft</button>
-        <button onclick="createTool('Mes Fichier', 'https://via.placeholder.com/50', '#2ecc71', '/apps/home', 200, 350)">Mes Fichier</button>
+        <button onclick="createTool('Terminal', 'https://via.placeholder.com/50', '#000000', '/apps/terminal', 450, 350)">Terminal</button>
+        <button onclick="createTool('Snake', 'https://via.placeholder.com/50', '#164b13', '/apps/snake', 200, 350)">Snake</button>
+        <button onclick="createTool('Agenda', 'https://via.placeholder.com/50', '#af77b7', '/apps/agenda', 200, 350)">Agenda</button>
+        <button onclick="createTool('Crypto', 'https://via.placeholder.com/50', '#c4c648', '/apps/crypto', 200, 350)">Crypto</button>
+        <button onclick="createTool('Files Explorer', 'https://via.placeholder.com/50', '#606cd3', '/apps/explorer', 200, 350)">Files Explorer</button>
     </div>
 
     {% if tools %}
