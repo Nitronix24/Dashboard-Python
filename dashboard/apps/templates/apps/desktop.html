@@ -43,6 +43,15 @@
             width: 50px;
             height: 50px;
         }
+        .resize-handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ccc;
+            bottom: 0;
+            right: 0;
+            cursor: se-resize;
+        }
         .context-menu {
             display: none;
             position: absolute;
@@ -60,7 +69,7 @@
             cursor: pointer;
         }
         .context-menu ul li:hover {
-            background-color: #ededed;
+            background-color: #eee;
         }
     </style>
 </head>
@@ -77,7 +86,8 @@
     <div class="desktop" id="desktop">
         {% for tool in tools %}
         <div class="tool-box" id="tool-{{ tool.id }}" style="background-color: {{ tool.color }}; height: {{ tool.height }}px; width: {{ tool.width }}px;">
-            <iframe src="{{ tool.url }}" width="100%" height="100%"></iframe> 
+            <iframe src="{{ tool.url }}" width="100%" height="100%"></iframe>
+            <div class="resize-handle"></div> <!-- Ajout de la poignée de redimensionnement -->
         </div>
         {% endfor %}
     </div>
@@ -114,7 +124,63 @@
             });
         }
 
-        document.querySelectorAll(".tool-box").forEach(makeDraggable);
+        function makeResizable(element) {
+            const resizeHandle = element.querySelector(".resize-handle");
+            let isResizing = false;
+            let startX, startY, startWidth, startHeight;
+
+            resizeHandle.addEventListener("mousedown", function(e) {
+                isResizing = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
+                startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
+                document.documentElement.addEventListener("mousemove", doResize);
+                document.documentElement.addEventListener("mouseup", stopResize);
+            });
+
+            function doResize(e) {
+                if (isResizing) {
+                    element.style.width = startWidth + e.clientX - startX + "px";
+                    element.style.height = startHeight + e.clientY - startY + "px";
+                }
+            }
+
+            function stopResize(e) {
+                if (isResizing) {
+                    isResizing = false;
+                    document.documentElement.removeEventListener("mousemove", doResize);
+                    document.documentElement.removeEventListener("mouseup", stopResize);
+                    saveToolBoxSize(element);
+                }
+            }
+        }
+
+        function saveToolBoxSize(element) {
+            const toolId = element.id.split('-')[1];
+            const width = element.style.width;
+            const height = element.style.height;
+
+            fetch(`/desktop/update_tool_size/${toolId}/`, {
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                body: new URLSearchParams({
+                    width: width,
+                    height: height
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    alert("Erreur lors de la sauvegarde de la taille de l'outil.");
+                }
+            });
+        }
+
+        document.querySelectorAll(".tool-box").forEach(element => {
+            makeDraggable(element);
+            makeResizable(element);
+        });
 
         function createTool(name, icon_url, color, url, height, width) {
             fetch("{% url 'create_tool' %}", {
@@ -144,10 +210,12 @@
                 toolBox.style.width = data.width + "px";
                 toolBox.innerHTML = `
                     <iframe src="${data.url}" width="100%" height="100%"></iframe>
+                    <div class="resize-handle"></div> <!-- Ajout de la poignée de redimensionnement -->
                 `;
 
                 document.getElementById("desktop").appendChild(toolBox);
                 makeDraggable(toolBox);
+                makeResizable(toolBox);
                 addContextMenu(toolBox);
             });
         }
@@ -172,7 +240,7 @@
             const targetId = contextMenu.dataset.target;
             const targetElement = document.getElementById(targetId);
 
-            fetch(`/delete_tool/${targetId.split('-')[1]}/`, {
+            fetch(`/apps/desktop/delete_tool/${targetId.split('-')[1]}/`, {
                 method: "POST",
                 headers: { "X-CSRFToken": "{{ csrf_token }}" }
             })

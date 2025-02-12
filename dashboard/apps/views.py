@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from .models import ToolBox
 
@@ -23,6 +23,24 @@ def create_tool(request):
             "color": new_tool.color,
             "url": new_tool.url
         })
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+def delete_tool(request, tool_id):
+    if request.method == "POST":
+        tool = get_object_or_404(ToolBox, id=tool_id)
+        tool.delete()
+        return JsonResponse({"success": True})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+def update_tool_size(request, tool_id):
+    if request.method == "POST":
+        tool = get_object_or_404(ToolBox, id=tool_id)
+        tool.width = request.POST.get("width")
+        tool.height = request.POST.get("height")
+        tool.save()
+        return JsonResponse({"success": True})
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
