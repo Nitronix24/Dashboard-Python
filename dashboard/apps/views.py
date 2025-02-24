@@ -16,6 +16,8 @@ def create_tool(request):
         url = request.POST.get("url")
         x = request.POST.get("x", 0)
         y = request.POST.get("y", 0)
+        height= request.POST.get("height")
+        width= request.POST.get("width")
         
         new_tool = ToolBox.objects.create(name=name, icon_url=icon_url, color=color, url=url, x=x, y=y)
         return JsonResponse({
@@ -25,7 +27,9 @@ def create_tool(request):
             "color": new_tool.color,
             "url": new_tool.url,
             "x": new_tool.x,
-            "y": new_tool.y
+            "y": new_tool.y,
+            "height": new_tool.height,
+            "width": new_tool.width
         })
 
     return JsonResponse({"error": "Invalid request"}, status=400)
