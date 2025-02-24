@@ -16,4 +16,7 @@ urlpatterns = [
     path('agenda/', views.agenda, name='agenda'),  
     path('crypto/', views.crypto, name='crypto'), 
     path('explorer/', views.explorer, name='explorer'),
+    path('navigateur/', views.navigateur, name='navigateur'),
+    path('meteo/', views.meteo, name='meteo'),
+    path('chat/', views.chat, name='chat'),
 ]
