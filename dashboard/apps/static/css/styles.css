@@ -1,57 +1,82 @@
 /* General styles */
 body {
+    background: #2c3e50;
+    color: white;
     font-family: Arial, sans-serif;
+    background: url('/static/images/fond.jpg');
     margin: 0;
     padding: 0;
-    color: #333;
 }
 
-/* Header styles */
-header {
-    background-color: #4CAF50;
+.toolbar {
+    margin: 10px;
+    padding: 2px;
+    background-color: blanchedalmond;
+}
+
+.toolbar button {
+    background-color: #1a1a2e;
     color: white;
-    padding: 20px 0;
-    text-align: center;
+    margin: 5px;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
 }
 
-header h1 {
-    margin: 0;
-    font-size: 2.5em;
-}
-
-/* Main section styles */
-main {
-    padding: 20px;
-}
-
-main section {
-    background-color: white;
-    padding: 20px;
-    margin: 20px 0;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-main section h2 {
-    margin-top: 0;
-    color: #4CAF50;
-}
-
-main section p {
-    line-height: 1.6;
-}
-
-/* Footer styles */
-footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 10px 0;
-    position: fixed;
+.desktop {
+    position: relative;
     width: 100%;
-    bottom: 0;
+    height: 90vh;
+    overflow: hidden;
 }
 
-footer p {
+.tool-box {
+    margin: 10px;
+    position: absolute;
+    width: 150px;
+    height: 100px;
+    border: 2px solid white;
+    padding: 10px;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-box img {
+    width: 50px;
+    height: 50px;
+}
+
+.resize-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #ccc;
+    bottom: 0;
+    right: 0;
+    cursor: se-resize;
+}
+
+.context-menu {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    z-index: 1000;
+}
+
+.context-menu ul {
+    list-style: none;
+    padding: 0;
     margin: 0;
+}
+
+.context-menu ul li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.context-menu ul li:hover {
+    background-color: #eee;
 }

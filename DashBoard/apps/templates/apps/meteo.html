@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            width: 200px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Météo</h1>
+    <input type="text" id="city" placeholder="Entrez une ville" />
+    <button onclick="getWeather()">Obtenir la météo</button>
+
+    <h3 id="cityName"></h3>
+    <p id="temperature"></p>
+    <p id="weatherDescription"></p>
+
+    <script>
+        async function getWeather() {
+            const city = document.getElementById("city").value;
+            const apiKey = "7830963d616e4eefbec72151cfc65969"; // Remplace avec ta clé API OpenCage
+
+            // Étape 1 : Obtenir les coordonnées de la ville via OpenCage
+            const geoUrl = `https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${apiKey}`;
+            const geoResponse = await fetch(geoUrl);
+            const geoData = await geoResponse.json();
+
+            if (geoData.results.length === 0) {
+                alert("Ville non trouvée !");
+                return;
+            }
+
+            const lat = geoData.results[0].geometry.lat;
+            const lon = geoData.results[0].geometry.lng;
+
+            // Étape 2 : Obtenir la météo avec Open-Meteo
+            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius&windspeed_unit=kmh&timezone=Europe%2FParis`;
+
+            const weatherResponse = await fetch(weatherUrl);
+            const weatherData = await weatherResponse.json();
+
+            // Afficher la météo
+            const cityName = geoData.results[0].formatted;
+            const temperature = weatherData.current_weather.temperature;
+            const weatherDescription = weatherData.current_weather.weathercode;
+
+            document.getElementById("cityName").textContent = `Météo pour ${cityName}`;
+            document.getElementById("temperature").textContent = `Température : ${temperature}°C`;
+            document.getElementById("weatherDescription").textContent = `Conditions : ${weatherDescription}`;
+        }
+    </script>
+</body>
