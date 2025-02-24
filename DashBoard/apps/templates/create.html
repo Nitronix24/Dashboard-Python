@@ -58,6 +58,7 @@
     <div class="create-account-container">
         <h1>Create Account</h1>
         <form id="create-account-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
             <input type="text" id="new-username" name="username" placeholder="Username" required>
             <input type="password" id="new-password" name="password" placeholder="Password" required>
             <input type="password" id="confirm-password" placeholder="Confirm Password" required>
@@ -79,9 +80,14 @@
             if (password !== confirmPassword) {
                 errorMessage.textContent = 'Passwords do not match';
             } else {
-                // Simulate account creation success
-                alert('Account created successfully!');
-                window.location.href = 'login.html'; // Redirect to the login page
+                fetch('', {
+                    method: 'POST',
+                    body: new FormData(document.getElementById('create-account-form'))
+                })
+                .then(response => response.json())
+                .then(data => {
+                    window.location.href = '/';
+                })
             }
         });
     </script>

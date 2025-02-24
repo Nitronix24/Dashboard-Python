@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Login</title>
+    <title>Login</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -64,9 +64,10 @@
 <body>
     <div class="login-container">
         <h1>Login</h1>
-        <form id="login-form">
-            <input type="text" id="username" placeholder="Username" required>
-            <input type="password" id="password" placeholder="Password" required>
+        <form id="login-form" method="post" action="/check/">
+            {% csrf_token %}
+            <input type="text" id="username" name="username" placeholder="Username" required>
+            <input type="password" id="password" name="password" placeholder="Password" required>
             <button type="submit">Login</button>
             <div class="error-message" id="error-message"></div>
         </form>
@@ -76,16 +77,25 @@
     <script>
         document.getElementById('login-form').addEventListener('submit', function(event) {
             event.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('error-message');
+            const form = document.getElementById('login-form');
+            const formData = new FormData(form);
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            // Simple validation (you should replace this with real authentication logic)
-            if (username === 'admin' && password === 'password') {
-                window.location.href = 'file_explorer.html'; // Redirect to the main page
-            } else {
-                errorMessage.textContent = 'Invalid username or password';
-            }
+            fetch('/check/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('error-message').textContent = data.error;
+                } else {
+                    window.location.href = data.redirect_url;
+                }
+            });
         });
 
         document.querySelector('.create-account').addEventListener('click', function() {

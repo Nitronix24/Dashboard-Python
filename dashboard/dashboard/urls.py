@@ -20,5 +20,7 @@ from .views import login
 
 urlpatterns = [
     path('', views.login, name='login'),
+    path('create/', views.create, name='create'),
+    path('check/', views.check, name='check'),
     path('apps/', include('apps.urls')),
 ]
