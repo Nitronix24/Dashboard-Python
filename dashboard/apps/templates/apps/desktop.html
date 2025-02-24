@@ -12,8 +12,11 @@
             background: url('/static/images/fond.jpg');
         }
         .toolbar {
-            background-color: blanchedalmond;
-        }
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px;
+    background-color: transparent; /* or any color you prefer */
+}
         .toolbar button {
             background-color: #1a1a2e;
             color: white;
@@ -27,6 +30,24 @@
             width: 100%;
             height: 90vh;
             overflow: hidden;
+        }
+        .desktop-icon {
+            width: 80px;
+            margin: 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .desktop-icon img {
+            width: 50px;
+            height: 50px;
+            display: block;
+            margin: 0 auto;
+        }
+        .desktop-icon span {
+            font-size: 12px;
+            color: white;
+            margin-top: 5px;
+            display: block;
         }
         .tool-box {
             position: absolute;
@@ -73,14 +94,28 @@
         }
     </style>
 </head>
-<body>
-    <div class="toolbar">
-        <button onclick="createTool('Terminal', 'https://via.placeholder.com/50', '#000000', '/apps/terminal', 450, 350)">Terminal</button>
-        <button onclick="createTool('Snake', 'https://via.placeholder.com/50', '#164b13', '/apps/snake', 200, 350)">Snake</button>
-        <button onclick="createTool('Agenda', 'https://via.placeholder.com/50', '#af77b7', '/apps/agenda', 260, 560)">Agenda</button>
-        <button onclick="createTool('Crypto', 'https://via.placeholder.com/50', '#c4c648', '/apps/crypto', 200, 350)">Crypto</button>
-        <button onclick="createTool('Files Explorer', 'https://via.placeholder.com/50', '#606cd3', '/apps/explorer', 200, 350)">Files Explorer</button>
+<div class="toolbar">
+    <div class="desktop-icon" onclick="createTool('Terminal', 'https://via.placeholder.com/50', '#000000', '/apps/terminal', 450, 350)">
+        <img src="https://cdn1.iconfinder.com/data/icons/heroicons-solid/20/terminal-1024.png" alt="Terminal">
+        <span>Terminal</span>
     </div>
+    <div class="desktop-icon" onclick="createTool('Snake', 'https://cdn-icons-png.flaticon.com/512/135/135727.png', '#164b13', '/apps/snake', 200, 350)">
+        <img src="https://cdn2.iconfinder.com/data/icons/animals-nature-2/50/1F40D-snake-1024.png" alt="Snake">
+        <span>Snake</span>
+    </div>
+    <div class="desktop-icon" onclick="createTool('Agenda', 'https://via.placeholder.com/50', '#af77b7', '/apps/agenda', 260, 560)">
+        <img src="https://cdn2.iconfinder.com/data/icons/miscellaneous-31/60/calendar-512.png" alt="Agenda">
+        <span>Agenda</span>
+    </div>
+    <div class="desktop-icon" onclick="createTool('Crypto', 'https://via.placeholder.com/50', '#c4c648', '/apps/crypto', 200, 350)">
+        <img src="https://cdn0.iconfinder.com/data/icons/logos-21/40/Bitcoin-512.png" alt="Crypto">
+        <span>Crypto</span>
+    </div>
+    <div class="desktop-icon" onclick="createTool('Files Explorer', 'https://via.placeholder.com/50', '#606cd3', '/apps/explorer', 200, 350)">
+        <img src="https://cdn1.iconfinder.com/data/icons/aami-flat-folders/64/folder-13-512.png" alt="Files Explorer">
+        <span>Files Explorer</span>
+    </div>
+</div>
 
     {% if tools %}
     <div class="desktop" id="desktop">
