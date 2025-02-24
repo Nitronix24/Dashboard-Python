@@ -13,9 +13,9 @@ def create_tool(request):
         name = request.POST.get("name")
         icon_url = request.POST.get("icon_url")
         color = request.POST.get("color", "#ffffff")
-        url = request.POST.get("url"),
-        x = request.POST.get("x", 0),
-        y = request.POST.get("y", 0),
+        url = request.POST.get("url")
+        x = request.POST.get("x", 0)
+        y = request.POST.get("y", 0)
         
         new_tool = ToolBox.objects.create(name=name, icon_url=icon_url, color=color, url=url, x=x, y=y)
         return JsonResponse({
