@@ -55,42 +55,62 @@
     <input type="text" id="city" placeholder="Entrez une ville" />
     <button onclick="getWeather()">Obtenir la météo</button>
 
-    <h3 id="cityName"></h3>
+    <h3 id="city_name"></h3>
     <p id="temperature"></p>
-    <p id="weatherDescription"></p>
+    <p id="weather_description"></p>
 
     <script>
         async function getWeather() {
             const city = document.getElementById("city").value;
-            const apiKey = "7830963d616e4eefbec72151cfc65969"; // Remplace avec ta clé API OpenCage
+            const apiKey = "7830963d616e4eefbec72151cfc65969";
 
-            // Étape 1 : Obtenir les coordonnées de la ville via OpenCage
-            const geoUrl = `https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${apiKey}`;
-            const geoResponse = await fetch(geoUrl);
-            const geoData = await geoResponse.json();
+            const city_coordinates_url = `https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${apiKey}`;
+            const city_coordinates_response = await fetch(city_coordinates_url);
+            const city_coordinates = await city_coordinates_response.json();
 
-            if (geoData.results.length === 0) {
+            if (city_coordinates.results.length === 0) {
                 alert("Ville non trouvée !");
                 return;
             }
 
-            const lat = geoData.results[0].geometry.lat;
-            const lon = geoData.results[0].geometry.lng;
+            const lat = city_coordinates.results[0].geometry.lat;
+            const lon = city_coordinates.results[0].geometry.lng;
 
-            // Étape 2 : Obtenir la météo avec Open-Meteo
-            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius&windspeed_unit=kmh&timezone=Europe%2FParis`;
+            const weather_city_url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius&windspeed_unit=kmh&timezone=Europe%2FParis`;
+            const weather_city_response = await fetch(weather_city_url);
+            const weather_city = await weather_city_response.json();
 
-            const weatherResponse = await fetch(weatherUrl);
-            const weatherData = await weatherResponse.json();
+            const city_name = city_coordinates.results[0].formatted;
+            const temperature = weather_city.current_weather.temperature;
+            const weather_code = weather_city.current_weather.weathercode;
+            const weather_description = getWeatherDescription(weather_code);
 
-            // Afficher la météo
-            const cityName = geoData.results[0].formatted;
-            const temperature = weatherData.current_weather.temperature;
-            const weatherDescription = weatherData.current_weather.weathercode;
-
-            document.getElementById("cityName").textContent = `Météo pour ${cityName}`;
+            document.getElementById("city_name").textContent = `Météo pour ${city_name}`;
             document.getElementById("temperature").textContent = `Température : ${temperature}°C`;
-            document.getElementById("weatherDescription").textContent = `Conditions : ${weatherDescription}`;
+            document.getElementById("weather_description").textContent = `Conditions : ${weather_description}`;
+        }
+
+        function getWeatherDescription(weatherCode) {
+            const weatherConditions = {
+                0: "Ciel dégagé",
+                1: "Principalement dégagé",
+                2: "Partiellement nuageux",
+                3: "Couvert",
+                45: "Brouillard",
+                48: "Brouillard givrant",
+                51: "Bruine légère",
+                53: "Bruine modérée",
+                55: "Bruine dense",
+                61: "Pluie légère",
+                63: "Pluie modérée",
+                65: "Pluie forte",
+                71: "Neige légère",
+                73: "Neige modérée",
+                75: "Neige forte",
+                95: "Orage",
+            };
+            return weatherConditions[weatherCode] || "Conditions inconnues";
         }
     </script>
 </body>
+</html>
