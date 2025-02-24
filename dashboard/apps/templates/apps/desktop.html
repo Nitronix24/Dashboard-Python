@@ -94,12 +94,15 @@
         }
     </style>
 </head>
-<div class="toolbar">
-    <div class="desktop-icon" onclick="createTool('Terminal', 'https://via.placeholder.com/50', '#000000', '/apps/terminal', 450, 350)">
+
+
+    
+    <div class="desktop" id="desktop">
+    <div class="desktop-icon" onclick="createTool('Terminal', 'https://via.placeholder.com/50', '#000000', '/apps/terminal', 1000, 1000)">
         <img src="https://cdn1.iconfinder.com/data/icons/heroicons-solid/20/terminal-1024.png" alt="Terminal">
         <span>Terminal</span>
     </div>
-    <div class="desktop-icon" onclick="createTool('Snake', 'https://cdn-icons-png.flaticon.com/512/135/135727.png', '#164b13', '/apps/snake', 200, 350)">
+    <div class="desktop-icon" onclick="createTool('Snake', 'https://cdn-icons-png.flaticon.com/512/135/135727.png', '#164b13', '/apps/snake', 0, 0)">
         <img src="https://cdn2.iconfinder.com/data/icons/animals-nature-2/50/1F40D-snake-1024.png" alt="Snake">
         <span>Snake</span>
     </div>
@@ -115,11 +118,10 @@
         <img src="https://cdn1.iconfinder.com/data/icons/aami-flat-folders/64/folder-13-512.png" alt="Files Explorer">
         <span>Files Explorer</span>
     </div>
-</div>
 
     {% if tools %}
-    <div class="desktop" id="desktop">
-        {% for tool in tools %}
+    
+    {% for tool in tools %}
         <div class="tool-box" id="tool-{{ tool.id }}"
          style="background-color: {{ tool.color }}; 
                 width: {{ tool.width }}px; 
@@ -362,6 +364,32 @@
         }
 
         document.querySelectorAll(".tool-box").forEach(addContextMenu);
+        
+        function closeAllTools() {
+        const csrfToken = "{{ csrf_token }}";
+        document.querySelectorAll(".tool-box").forEach(element => {
+            const toolId = element.id.split('-')[1];
+            fetch(`/apps/desktop/delete_tool/${toolId}/`, {
+                method: "POST",
+                headers: { 
+                    "X-CSRFToken": csrfToken 
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    element.remove();
+                } else {
+                    console.error("Erreur lors de la fermeture de l'outil :", data);
+                    alert("Erreur lors de la fermeture de l'outil " + toolId);
+                }
+            })
+            .catch(error => console.error("Erreur réseau :", error));
+        });
+    }
     </script>
+<div class="desktop" id="desktop">
+    <button onclick="closeAllTools()">Fermer tous les outils</button>
 </body>
+
 </html>
