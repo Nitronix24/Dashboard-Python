@@ -7,6 +7,8 @@ class ToolBox(models.Model):
     url = models.URLField(default="#") 
     height = models.IntegerField(default=100)
     width = models.IntegerField(default=150)
+    x = models.IntegerField(default=50)
+    y = models.IntegerField(default=50)
 
     def __str__(self):
         return self.name

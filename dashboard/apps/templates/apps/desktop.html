@@ -10,7 +10,7 @@
     <div class="toolbar">
         <button onclick="createTool('Terminal', 'https://via.placeholder.com/50', '#000000', '/apps/terminal', 450, 350)">Terminal</button>
         <button onclick="createTool('Snake', 'https://via.placeholder.com/50', '#164b13', '/apps/snake', 200, 350)">Snake</button>
-        <button onclick="createTool('Agenda', 'https://via.placeholder.com/50', '#af77b7', '/apps/agenda', 200, 350)">Agenda</button>
+        <button onclick="createTool('Agenda', 'https://via.placeholder.com/50', '#af77b7', '/apps/agenda', 260, 560)">Agenda</button>
         <button onclick="createTool('Crypto', 'https://via.placeholder.com/50', '#c4c648', '/apps/crypto', 200, 350)">Crypto</button>
         <button onclick="createTool('Files Explorer', 'https://via.placeholder.com/50', '#606cd3', '/apps/explorer', 200, 350)">Files Explorer</button>
         <button onclick="createTool('Navigateur', 'https://via.placeholder.com/50', '#606cd3', '/apps/navigateur', 200, 350)">Navigateur</button>
@@ -20,10 +20,15 @@
     {% if tools %}
     <div class="desktop" id="desktop">
         {% for tool in tools %}
-        <div class="tool-box" id="tool-{{ tool.id }}" style="background-color: {{ tool.color }}; height: {{ tool.height }}px; width: {{ tool.width }}px;">
-            <iframe src="{{ tool.url }}" width="100%" height="100%"></iframe>
-            <div class="resize-handle"></div> <!-- Ajout de la poignée de redimensionnement -->
-        </div>
+        <div class="tool-box" id="tool-{{ tool.id }}"
+         style="background-color: {{ tool.color }}; 
+                width: {{ tool.width }}px; 
+                height: {{ tool.height }}px; 
+                top: {{ tool.y }}px; 
+                left: {{ tool.x }}px;">
+        <iframe src="{{ tool.url }}" width="100%" height="100%"></iframe>
+        <div class="resize-handle"></div> <!-- Ajout de la poignée de redimensionnement -->
+    </div>
         {% endfor %}
     </div>
     {% endif %}
@@ -38,80 +43,147 @@
         function makeDraggable(element) {
             let isDragging = false;
             let offsetX, offsetY;
+            let highestZIndex = 10; // Permet de gérer la mise au premier plan
 
-            element.addEventListener("mousedown", function(e) {
+            element.addEventListener("mousedown", function (e) {
+                e.preventDefault(); // Empêche la sélection de texte
                 isDragging = true;
+
+                // Sauvegarde la position initiale
                 offsetX = e.clientX - element.offsetLeft;
                 offsetY = e.clientY - element.offsetTop;
-                element.style.cursor = "grabbing";
-            });
 
-            document.addEventListener("mousemove", function(e) {
-                if (isDragging) {
-                    element.style.left = e.clientX - offsetX + "px";
-                    element.style.top = e.clientY - offsetY + "px";
+                // Amène la toolbox au premier plan
+                highestZIndex++;
+                element.style.zIndex = highestZIndex;
+
+                // Désactive la sélection de texte sur toute la page pendant le drag
+                document.body.style.userSelect = "none";
+                document.documentElement.style.pointerEvents = "none"; // Empêche d'autres interactions
+
+                function doDrag(event) {
+                    if (!isDragging) return;
+
+                    let newX = event.clientX - offsetX;
+                    let newY = event.clientY - offsetY;
+
+                    // Empêcher que la toolbox sorte de l'écran
+                    newX = Math.max(0, Math.min(window.innerWidth - element.offsetWidth, newX));
+                    newY = Math.max(0, Math.min(window.innerHeight - element.offsetHeight, newY));
+
+                    element.style.left = newX + "px";
+                    element.style.top = newY + "px";
                 }
-            });
 
-            document.addEventListener("mouseup", function() {
-                isDragging = false;
-                element.style.cursor = "grab";
+                function stopDrag() {
+                    if (!isDragging) return;
+                    isDragging = false;
+
+                    // Réactive la sélection et les interactions
+                    document.body.style.userSelect = "auto";
+                    document.documentElement.style.pointerEvents = "auto";
+
+                    document.removeEventListener("mousemove", doDrag);
+                    document.removeEventListener("mouseup", stopDrag);
+
+                    // Sauvegarde la nouvelle position après déplacement
+                    saveToolBox(element);
+                }
+
+                document.addEventListener("mousemove", doDrag);
+                document.addEventListener("mouseup", stopDrag);
             });
         }
+
+        function saveToolBox(element) {
+            const toolId = element.id.split('-')[1];
+
+            // Extraction des coordonnées sans "px"
+            const x = parseInt(element.style.left, 10);
+            const y = parseInt(element.style.top, 10);
+
+            // Extraction de la taille
+            const width = parseInt(element.style.width, 10);
+            const height = parseInt(element.style.height, 10);
+
+            // Vérification que les valeurs sont bien des nombres
+            if (isNaN(x) || isNaN(y) || isNaN(width) || isNaN(height)) {
+                console.error("Erreur : une des valeurs envoyées n'est pas un nombre valide.", { x, y, width, height });
+                return;
+            }
+
+            fetch(`/apps/desktop/update_tool/${toolId}/`, {
+                method: "POST",
+                headers: { 
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({ width, height, x, y }) // Envoi de la position et de la taille
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error("Erreur lors de la sauvegarde de la position et de la taille :", data);
+                    alert("Erreur lors de la sauvegarde de la position et de la taille de l'outil.");
+                }
+            })
+            .catch(error => console.error("Erreur réseau :", error));
+        }
+
+
 
         function makeResizable(element) {
             const resizeHandle = element.querySelector(".resize-handle");
             let isResizing = false;
             let startX, startY, startWidth, startHeight;
+            let resizeTimeout;
 
-            resizeHandle.addEventListener("mousedown", function(e) {
+            resizeHandle.addEventListener("mousedown", function (e) {
+                e.preventDefault();
                 isResizing = true;
+
+                // Stockage des dimensions et de la position initiale
                 startX = e.clientX;
                 startY = e.clientY;
-                startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
-                startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
-                document.documentElement.addEventListener("mousemove", doResize);
-                document.documentElement.addEventListener("mouseup", stopResize);
-            });
+                startWidth = element.offsetWidth;
+                startHeight = element.offsetHeight;
 
-            function doResize(e) {
-                if (isResizing) {
-                    element.style.width = startWidth + e.clientX - startX + "px";
-                    element.style.height = startHeight + e.clientY - startY + "px";
+                document.documentElement.style.pointerEvents = "none"; // Désactive les interactions parasites
+
+                function doResize(event) {
+                    if (!isResizing) return;
+
+                    // Calcul des nouvelles dimensions
+                    let newWidth = startWidth + (event.clientX - startX);
+                    let newHeight = startHeight + (event.clientY - startY);
+
+                    // Empêcher des tailles trop petites
+                    newWidth = Math.max(newWidth, 50);
+                    newHeight = Math.max(newHeight, 50);
+
+                    element.style.width = newWidth + "px";
+                    element.style.height = newHeight + "px";
                 }
-            }
 
-            function stopResize(e) {
-                if (isResizing) {
+                function stopResize() {
+                    if (!isResizing) return;
                     isResizing = false;
-                    document.documentElement.removeEventListener("mousemove", doResize);
-                    document.documentElement.removeEventListener("mouseup", stopResize);
-                    saveToolBoxSize(element);
-                }
-            }
-        }
+                    document.documentElement.style.pointerEvents = "auto"; // Réactive les interactions
 
-        function saveToolBoxSize(element) {
-            const toolId = element.id.split('-')[1];
-            const width = element.style.width;
-            const height = element.style.height;
+                    document.removeEventListener("mousemove", doResize);
+                    document.removeEventListener("mouseup", stopResize);
 
-            fetch(`/desktop/update_tool_size/${toolId}/`, {
-                method: "POST",
-                headers: { "X-CSRFToken": "{{ csrf_token }}" },
-                body: new URLSearchParams({
-                    width: width,
-                    height: height
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) {
-                    alert("Erreur lors de la sauvegarde de la taille de l'outil.");
+                    // Attendre un court instant avant d'enregistrer la nouvelle taille
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => saveToolBox(element), 300);
                 }
+
+                document.addEventListener("mousemove", doResize);
+                document.addEventListener("mouseup", stopResize);
             });
         }
 
+        
         document.querySelectorAll(".tool-box").forEach(element => {
             makeDraggable(element);
             makeResizable(element);
@@ -139,8 +211,8 @@
                 toolBox.className = "tool-box";
                 toolBox.id = "tool-" + data.id;
                 toolBox.style.backgroundColor = data.color;
-                toolBox.style.top = "100px";
-                toolBox.style.left = "100px";
+                toolBox.style.top = data.y + "px";
+                toolBox.style.left = data.x + "px";
                 toolBox.style.height = data.height + "px";
                 toolBox.style.width = data.width + "px";
                 toolBox.innerHTML = `
