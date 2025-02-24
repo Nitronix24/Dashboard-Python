@@ -90,8 +90,8 @@
             document.getElementById("weather_description").textContent = `Conditions : ${weather_description}`;
         }
 
-        function getWeatherDescription(weatherCode) {
-            const weatherConditions = {
+        function getWeatherDescription(weather_code) {
+            const weather_conditions = {
                 0: "Ciel dégagé",
                 1: "Principalement dégagé",
                 2: "Partiellement nuageux",
@@ -109,7 +109,7 @@
                 75: "Neige forte",
                 95: "Orage",
             };
-            return weatherConditions[weatherCode] || "Conditions inconnues";
+            return weather_conditions[weather_code] || "Conditions inconnues";
         }
     </script>
 </body>
