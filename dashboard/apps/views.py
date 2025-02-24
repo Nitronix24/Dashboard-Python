@@ -65,3 +65,5 @@ def navigateur(request):
     return render(request, 'apps/navigateur.html')
 def meteo(request):
     return render(request, 'apps/meteo.html')
+def chat(request):
+    return render(request, 'apps/chat.html')
