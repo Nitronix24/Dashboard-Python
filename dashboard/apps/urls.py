@@ -18,4 +18,5 @@ urlpatterns = [
     path('explorer/', views.explorer, name='explorer'),
     path('navigateur/', views.navigateur, name='navigateur'),
     path('meteo/', views.meteo, name='meteo'),
+    path('chat/', views.chat, name='chat'),
 ]
