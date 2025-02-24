@@ -4,8 +4,11 @@ class ToolBox(models.Model):
     name = models.CharField(max_length=100)
     icon_url = models.CharField(max_length=255)  # Stocke le lien vers l'icône
     color = models.CharField(max_length=20, default="#ffffff")  # Couleur de fond
-    position_x = models.IntegerField(default=100)
-    position_y = models.IntegerField(default=100)
+    url = models.URLField(default="#") 
+    height = models.IntegerField(default=100)
+    width = models.IntegerField(default=150)
+    x = models.IntegerField(default=50)
+    y = models.IntegerField(default=50)
 
     def __str__(self):
         return self.name
